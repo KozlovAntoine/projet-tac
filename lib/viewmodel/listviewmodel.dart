@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_android_kozlov/service/service.dart';
-
-import 'ViewModel.dart';
+import 'package:projet_android_kozlov/viewmodel/viewmodel.dart';
 
 class ViewModel with ChangeNotifier {
   List<ChampionViewModel> champions = [];

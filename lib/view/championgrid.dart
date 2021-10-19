@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_android_kozlov/view/championlist.dart';
+import 'package:projet_android_kozlov/view/detailsview.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -26,8 +27,14 @@ class _ChampionGridState extends State<ChampionGrid> {
         body: GridView.count(
           crossAxisCount: 2,
           children: List.generate(provider.champions.length, (index) {
-            return Center(
+            return InkWell(
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => ChampionDetail(
+                          viewModel: provider.champions[index]))),
               child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Image.network(provider.champions[index].imageUrl),
                   Text(provider.champions[index].nom),

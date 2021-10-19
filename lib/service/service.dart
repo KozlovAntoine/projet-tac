@@ -8,7 +8,6 @@ import 'api/api.dart';
 class Service {
   Future<Champion> fetchChampion(String champion) async {
     final response = await http.get(Uri.parse(Api.championData(champion)));
-    final imgUrl = Api.championImageUrl(champion);
     if (response.statusCode == 200) {
       return Champion.fromJson(jsonDecode(utf8.decode(response.bodyBytes)));
     } else {

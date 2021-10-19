@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:projet_android_kozlov/view/championgrid.dart';
+import 'package:projet_android_kozlov/view/detailsview.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -23,16 +24,28 @@ class _ChampionListState extends State<ChampionList> {
           ),
         ],
       ),
-      body: ListView.builder(
+      body: ListView.separated(
         itemBuilder: (context, index) {
           final champion = provider.champions[index];
-          return ListTile(
-            leading: Image.network(champion.imageUrl),
-            title: Text(champion.nom),
-            subtitle: Text(champion.titre),
+          return InkWell(
+            onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (_) => ChampionDetail(viewModel: champion))),
+            child: ListTile(
+              leading: ClipRRect(
+                child: Image.network(champion.imageUrl),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              title: Text(champion.nom),
+              subtitle: Text(champion.titre),
+            ),
           );
         },
         itemCount: provider.champions.length,
+        separatorBuilder: (BuildContext context, int index) {
+          return Divider();
+        },
       ),
     );
   }
