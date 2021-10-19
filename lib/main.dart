@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:projet_android_kozlov/view/championgrid.dart';
-import 'package:projet_android_kozlov/view/championlist.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -13,14 +12,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
-      ),
-      home: ChangeNotifierProvider(
-        create: (_) => ViewModel(),
-        child: ChampionGrid(),
-      ),
+    return ChangeNotifierProvider(
+      create: (context) => ViewModel(),
+      child: MaterialApp(
+          title: 'Flutter Demo',
+          debugShowCheckedModeBanner: false,
+          home: ChampionGrid()),
     );
   }
 }

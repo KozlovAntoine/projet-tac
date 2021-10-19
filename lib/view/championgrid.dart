@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projet_android_kozlov/view/championlist.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,13 @@ class _ChampionGridState extends State<ChampionGrid> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('LoL Champions'),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.pushReplacement(
+                  context, MaterialPageRoute(builder: (_) => ChampionList())),
+              icon: const Icon(Icons.list),
+            ),
+          ],
         ),
         body: GridView.count(
           crossAxisCount: 2,

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projet_android_kozlov/view/championgrid.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
 
@@ -14,6 +15,13 @@ class _ChampionListState extends State<ChampionList> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('LoL Champions'),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.pushReplacement(
+                context, MaterialPageRoute(builder: (_) => ChampionGrid())),
+            icon: const Icon(Icons.grid_on),
+          ),
+        ],
       ),
       body: ListView.builder(
         itemBuilder: (context, index) {
