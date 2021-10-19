@@ -1,16 +1,23 @@
-class ChampionModel {
+import 'package:projet_android_kozlov/service/api/api.dart';
+
+class Champion {
   String nom;
   String titre;
   String lore;
+  String imageUrl;
 
-  ChampionModel({required this.nom, required this.titre, required this.lore});
+  Champion(
+      {required this.nom,
+      required this.titre,
+      required this.lore,
+      required this.imageUrl});
 
-  factory ChampionModel.fromJson(Map<String, dynamic> json, String champion) {
-    final map = json['data'][champion];
-    return ChampionModel(
-      titre: map['title'],
-      nom: map['name'],
-      lore: map['lore'],
+  factory Champion.fromJson(Map<String, dynamic> json) {
+    return Champion(
+      titre: json['title'],
+      nom: json['name'],
+      lore: json['blurb'],
+      imageUrl: Api.championImageUrl(json['image']['full']),
     );
   }
 }
