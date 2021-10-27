@@ -6,6 +6,10 @@ class ChampionViewModel {
   final Champion champion;
   ChampionViewModel({required this.champion});
 
+  String get id {
+    return champion.id;
+  }
+
   String get nom {
     return champion.nom;
   }
@@ -14,11 +18,30 @@ class ChampionViewModel {
     return champion.titre;
   }
 
-  String get lore {
-    return champion.lore;
+  String get blurb {
+    return champion.blurb;
   }
 
   String get imageUrl {
     return champion.imageUrl;
+  }
+
+  @override
+  String toString() {
+    return nom;
+  }
+
+  bool get loved {
+    return champion.loved;
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'id': champion.id,
+      'nom': champion.nom,
+      'titre': champion.titre,
+      'blurb': champion.blurb,
+      'imageUrl': champion.imageUrl,
+    };
   }
 }

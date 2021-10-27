@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:projet_android_kozlov/view/championgrid.dart';
+import 'package:projet_android_kozlov/service/local/database.dart';
+import 'package:projet_android_kozlov/view/view.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  DataBaseLovedChamp dataBaseLovedChamp = DataBaseLovedChamp();
   runApp(const MyApp());
 }
 
@@ -17,7 +20,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           title: 'Flutter Demo',
           debugShowCheckedModeBanner: false,
-          home: ChampionGrid()),
+          home: ChampionList()),
     );
   }
 }

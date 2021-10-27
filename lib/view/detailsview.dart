@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:projet_android_kozlov/viewmodel/viewmodel.dart';
+import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
+import 'package:provider/provider.dart';
 
 class ChampionDetail extends StatefulWidget {
-  final ChampionViewModel viewModel;
-  ChampionDetail({required this.viewModel});
   @override
   State<ChampionDetail> createState() => _ChampionDetailState();
 }
@@ -11,17 +10,17 @@ class ChampionDetail extends StatefulWidget {
 class _ChampionDetailState extends State<ChampionDetail> {
   @override
   Widget build(BuildContext context) {
-    final champion = widget.viewModel;
+    final provider = Provider.of<ViewModel>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(champion.nom),
+        title: Text(provider.selected.nom),
       ),
       body: Column(
         children: [
-          Image.network(champion.imageUrl),
-          Text(champion.nom),
-          Text(champion.titre),
-          Text(champion.lore),
+          Image.network(provider.selected.imageUrl),
+          Text(provider.selected.nom),
+          Text(provider.selected.titre),
+          Text(provider.selected.blurb),
         ],
       ),
     );
