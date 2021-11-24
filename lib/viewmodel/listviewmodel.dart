@@ -8,23 +8,27 @@ class ViewModel with ChangeNotifier {
   List<ChampionViewModel> champions = [];
   ChampionViewModel? _selected;
   bool inLovedTab = false;
+  bool inSearchMode = false;
+  String searchTxt = "";
 
   ViewModel() {
     fetchChampions();
   }
 
   Future<void> fetch() async {
-    if (inLovedTab)
+    if (inSearchMode) {
+      await search(searchTxt);
+    } else if (inLovedTab) {
       fetchLovedChampions();
-    else
+    } else {
       fetchChampions();
+    }
   }
 
   /// Recupere toute la liste des champions
   /// On stocke dans champions
   /// On notifie les listeners
   Future<void> fetchChampions() async {
-    inLovedTab = false;
     final results = await _merge();
     champions = results
         .map((champion) => ChampionViewModel(champion: champion))
@@ -36,6 +40,12 @@ class ViewModel with ChangeNotifier {
     List<Champion> list = [];
     final results = await Service().fetchChampions();
     final loved = await Service().fetchLovedFromLocal();
+    results.removeWhere((element) {
+      for (Champion c in loved) {
+        if (c.id == element.id) return true;
+      }
+      return false;
+    });
     list.addAll(loved);
     list.addAll(results);
     return list;
@@ -45,7 +55,12 @@ class ViewModel with ChangeNotifier {
   /// On stocke dans champions
   /// On notifie les listeners
   Future<void> search(String search) async {
-    final results = await _merge();
+    searchTxt = search;
+    List<Champion> results = [];
+    if (inLovedTab)
+      results = await Service().fetchLovedFromLocal();
+    else
+      results = await _merge();
 
     /// on ignore les majuscules
     final research = results.where((element) =>
@@ -58,7 +73,6 @@ class ViewModel with ChangeNotifier {
   }
 
   Future<void> fetchLovedChampions() async {
-    inLovedTab = true;
     final results = await Service().fetchLovedFromLocal();
     champions = results
         .map((champion) => ChampionViewModel(champion: champion))
@@ -85,5 +99,13 @@ class ViewModel with ChangeNotifier {
 
   ChampionViewModel get selected {
     return _selected!;
+  }
+
+  void setSearchMode(bool searchMode) {
+    inSearchMode = searchMode;
+  }
+
+  void setInLovedTab(bool b) {
+    inLovedTab = b;
   }
 }

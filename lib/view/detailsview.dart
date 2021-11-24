@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
@@ -17,7 +18,10 @@ class _ChampionDetailState extends State<ChampionDetail> {
       ),
       body: Column(
         children: [
-          Image.network(provider.selected.imageUrl),
+          CachedNetworkImage(
+            placeholder: (context, url) => const CircularProgressIndicator(),
+            imageUrl: provider.selected.imageUrl,
+          ),
           Text(provider.selected.nom),
           Text(provider.selected.titre),
           Text(provider.selected.blurb),

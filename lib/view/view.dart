@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:projet_android_kozlov/view/detailsview.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
@@ -32,11 +33,12 @@ class _ChampionListState extends State<ChampionList>
     _tabController = TabController(vsync: this, length: 2);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
-        print(_tabController.index);
         if (_tabController.index == 0) {
-          provider.fetchChampions();
-        } else
-          provider.fetchLovedChampions();
+          provider.setInLovedTab(false);
+        } else {
+          provider.setInLovedTab(true);
+        }
+        provider.fetch();
       }
     });
 
@@ -55,65 +57,62 @@ class _ChampionListState extends State<ChampionList>
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      initialIndex: 1,
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          /// searchMode
-          /// vrai: on affiche la barre de recherche
-          /// faux: on affiche le titre
-          title: searchMode
-              ? TextField(
-                  autofocus: true,
-                  controller: searchController,
-                  cursorColor: Colors.white,
-                  style: TextStyle(color: Colors.white),
-                  decoration: const InputDecoration(
-                    hintText: 'Nom du champion',
-                    hintStyle: TextStyle(color: Colors.white),
-                  ),
-                )
-              : const Text('LoL Champions'),
-          actions: [
-            IconButton(
-              icon: Icon(searchMode ? Icons.clear : Icons.search),
-              onPressed: () {
-                setState(() {
-                  searchMode = !searchMode;
-                  if (!searchMode) {
-                    searchController.text = "";
-                  }
-                });
-              },
-            ),
-            IconButton(
-              onPressed: () => setState(() {
-                /// Affichage liste vers grille et vice versa
-                listMode = !listMode;
-              }),
-              icon:
-                  listMode ? const Icon(Icons.list) : const Icon(Icons.grid_on),
-            ),
-          ],
-          bottom: TabBar(
-            controller: _tabController,
-            tabs: myTabs,
+    return Scaffold(
+      appBar: AppBar(
+        /// searchMode
+        /// vrai: on affiche la barre de recherche
+        /// faux: on affiche le titre
+        title: searchMode
+            ? TextField(
+                autofocus: true,
+                controller: searchController,
+                cursorColor: Colors.white,
+                style: TextStyle(color: Colors.white),
+                decoration: const InputDecoration(
+                  hintText: 'Nom du champion',
+                  hintStyle: TextStyle(color: Colors.white),
+                ),
+              )
+            : const Text('LoL Champions'),
+        actions: [
+          IconButton(
+            icon: Icon(searchMode ? Icons.clear : Icons.search),
+            onPressed: () {
+              final provider = Provider.of<ViewModel>(context, listen: false);
+              setState(() {
+                searchMode = !searchMode;
+                provider.setSearchMode(searchMode);
+                if (!searchMode) {
+                  searchController.text = "";
+                }
+              });
+            },
           ),
+          IconButton(
+            onPressed: () => setState(() {
+              /// Affichage liste vers grille et vice versa
+              listMode = !listMode;
+            }),
+            icon: listMode ? const Icon(Icons.list) : const Icon(Icons.grid_on),
+          ),
+        ],
+        bottom: TabBar(
+          controller: _tabController,
+          tabs: myTabs,
         ),
-
-        /// listMode
-        /// vrai: on affiche la liste
-        /// faux: on affiche la grille
-        body: TabBarView(children: [
-          Container(
-            child: listMode ? list(context) : grid(context),
-          ),
-          Container(
-            child: listMode ? list(context) : grid(context),
-          ),
-        ]),
       ),
+
+      /// listMode
+      /// vrai: on affiche la liste
+      /// faux: on affiche la grille
+      body: TabBarView(controller: _tabController, children: [
+        Container(
+          child: listMode ? list(context) : grid(context),
+        ),
+        Container(
+          child: listMode ? list(context) : grid(context),
+        ),
+      ]),
     );
   }
 
@@ -132,7 +131,11 @@ class _ChampionListState extends State<ChampionList>
             ),
             child: ListTile(
               leading: ClipRRect(
-                child: Image.network(champion.imageUrl),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  imageUrl: champion.imageUrl,
+                ),
                 borderRadius: BorderRadius.circular(30),
               ),
               title: Text(champion.nom),
@@ -168,14 +171,37 @@ class _ChampionListState extends State<ChampionList>
       crossAxisCount:
           MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3,
       children: List.generate(champions.length, (index) {
-        return InkWell(
-          onTap: () => details(champions[index]),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        return Card(
+          semanticContainer: true,
+          clipBehavior: Clip.antiAliasWithSaveLayer,
+          child: Stack(
             children: [
-              Image.network(champions[index].imageUrl),
-              Text(champions[index].nom),
+              Positioned.fill(
+                child: CachedNetworkImage(
+                  placeholder: (context, url) =>
+                      const CircularProgressIndicator(),
+                  imageUrl: champions[index].imageUrl,
+                  fit: BoxFit.fill,
+                ),
+              ),
+              Positioned.fill(
+                child: Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Container(
+                    height: 20,
+                    color: Colors.black45,
+                  ),
+                ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Text(champions[index].nom,
+                    style: TextStyle(color: Colors.white)),
+              ),
             ],
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0),
           ),
         );
       }),
