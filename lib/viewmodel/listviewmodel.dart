@@ -20,8 +20,12 @@ class ViewModel with ChangeNotifier {
       await search(searchTxt);
     } else if (inLovedTab) {
       fetchLovedChampions();
+      //print('fetch loved tab');
+      //print(champions.toString());
     } else {
       fetchChampions();
+      //print('fetch all');
+      //print(champions.toString());
     }
   }
 
@@ -40,6 +44,7 @@ class ViewModel with ChangeNotifier {
     List<Champion> list = [];
     final results = await Service().fetchChampions();
     final loved = await Service().fetchLovedFromLocal();
+    print("merge loved" + loved.toString());
     results.removeWhere((element) {
       for (Champion c in loved) {
         if (c.id == element.id) return true;
@@ -48,6 +53,9 @@ class ViewModel with ChangeNotifier {
     });
     list.addAll(loved);
     list.addAll(results);
+    list.sort((e1, e2) {
+      return e1.nom.compareTo(e2.nom);
+    });
     return list;
   }
 
@@ -57,10 +65,11 @@ class ViewModel with ChangeNotifier {
   Future<void> search(String search) async {
     searchTxt = search;
     List<Champion> results = [];
-    if (inLovedTab)
+    if (inLovedTab) {
       results = await Service().fetchLovedFromLocal();
-    else
+    } else {
       results = await _merge();
+    }
 
     /// on ignore les majuscules
     final research = results.where((element) =>

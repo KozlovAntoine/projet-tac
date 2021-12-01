@@ -12,6 +12,10 @@ class Api {
     return 'http://ddragon.leagueoflegends.com/cdn/11.20.1/img/champion/$img';
   }
 
+  static String spellImageUrl(String spell) {
+    return 'http://ddragon.leagueoflegends.com/cdn/11.23.1/img/spell/$spell.png';
+  }
+
   /// Construit l'URL pour un champion
   static String championData(String champion) {
     return '$_championUrl$champion.json';

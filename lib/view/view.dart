@@ -30,13 +30,15 @@ class _ChampionListState extends State<ChampionList>
   void initState() {
     super.initState();
     final provider = Provider.of<ViewModel>(context, listen: false);
-    _tabController = TabController(vsync: this, length: 2);
+    _tabController = TabController(vsync: this, length: 2, initialIndex: 0);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         if (_tabController.index == 0) {
           provider.setInLovedTab(false);
+          print('normal tab');
         } else {
           provider.setInLovedTab(true);
+          print('loved tab');
         }
         provider.fetch();
       }
@@ -57,62 +59,67 @@ class _ChampionListState extends State<ChampionList>
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        /// searchMode
-        /// vrai: on affiche la barre de recherche
-        /// faux: on affiche le titre
-        title: searchMode
-            ? TextField(
-                autofocus: true,
-                controller: searchController,
-                cursorColor: Colors.white,
-                style: TextStyle(color: Colors.white),
-                decoration: const InputDecoration(
-                  hintText: 'Nom du champion',
-                  hintStyle: TextStyle(color: Colors.white),
-                ),
-              )
-            : const Text('LoL Champions'),
-        actions: [
-          IconButton(
-            icon: Icon(searchMode ? Icons.clear : Icons.search),
-            onPressed: () {
-              final provider = Provider.of<ViewModel>(context, listen: false);
-              setState(() {
-                searchMode = !searchMode;
-                provider.setSearchMode(searchMode);
-                if (!searchMode) {
-                  searchController.text = "";
-                }
-              });
-            },
+    return DefaultTabController(
+      length: 2,
+      initialIndex: 0,
+      child: Scaffold(
+        appBar: AppBar(
+          /// searchMode
+          /// vrai: on affiche la barre de recherche
+          /// faux: on affiche le titre
+          title: searchMode
+              ? TextField(
+                  autofocus: true,
+                  controller: searchController,
+                  cursorColor: Colors.white,
+                  style: TextStyle(color: Colors.white),
+                  decoration: const InputDecoration(
+                    hintText: 'Nom du champion',
+                    hintStyle: TextStyle(color: Colors.white),
+                  ),
+                )
+              : const Text('LoL Champions'),
+          actions: [
+            IconButton(
+              icon: Icon(searchMode ? Icons.clear : Icons.search),
+              onPressed: () {
+                setState(() {
+                  searchMode = !searchMode;
+                  if (!searchMode) {
+                    searchController.text = "";
+                  }
+                });
+              },
+            ),
+            IconButton(
+              onPressed: () => setState(() {
+                /// Affichage liste vers grille et vice versa
+                listMode = !listMode;
+              }),
+              icon:
+                  listMode ? const Icon(Icons.list) : const Icon(Icons.grid_on),
+            ),
+          ],
+          bottom: TabBar(
+            controller: _tabController,
+            tabs: myTabs,
           ),
-          IconButton(
-            onPressed: () => setState(() {
-              /// Affichage liste vers grille et vice versa
-              listMode = !listMode;
-            }),
-            icon: listMode ? const Icon(Icons.list) : const Icon(Icons.grid_on),
-          ),
-        ],
-        bottom: TabBar(
-          controller: _tabController,
-          tabs: myTabs,
+        ),
+
+        /// listMode
+        /// vrai: on affiche la liste
+        /// faux: on affiche la grille
+        body: TabBarView(
+          children: [
+            Container(
+              child: listMode ? list(context) : grid(context),
+            ),
+            Container(
+              child: listMode ? list(context) : grid(context),
+            ),
+          ],
         ),
       ),
-
-      /// listMode
-      /// vrai: on affiche la liste
-      /// faux: on affiche la grille
-      body: TabBarView(controller: _tabController, children: [
-        Container(
-          child: listMode ? list(context) : grid(context),
-        ),
-        Container(
-          child: listMode ? list(context) : grid(context),
-        ),
-      ]),
     );
   }
 
@@ -120,44 +127,48 @@ class _ChampionListState extends State<ChampionList>
   list(BuildContext context) {
     final provider = Provider.of<ViewModel>(context);
     final champions = provider.champions;
-    return ListView.builder(
-      itemBuilder: (context, index) {
-        final champion = champions[index];
-        return InkWell(
-          onTap: () => details(champion),
-          child: Card(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(30.0),
-            ),
-            child: ListTile(
-              leading: ClipRRect(
-                child: CachedNetworkImage(
-                  placeholder: (context, url) =>
-                      const CircularProgressIndicator(),
-                  imageUrl: champion.imageUrl,
+    return Consumer<ViewModel>(
+      builder: (_, provider, __) {
+        return ListView.builder(
+          itemBuilder: (context, index) {
+            final champion = champions[index];
+            return InkWell(
+              onTap: () => details(champion),
+              child: Card(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(30.0),
                 ),
-                borderRadius: BorderRadius.circular(30),
-              ),
-              title: Text(champion.nom),
-              subtitle: Text(champion.titre),
-              trailing: IconButton(
-                icon: Icon(
-                  Icons.favorite,
-                  color: champion.loved ? Colors.red : Colors.grey,
+                child: ListTile(
+                  leading: ClipRRect(
+                    child: CachedNetworkImage(
+                      placeholder: (context, url) =>
+                          const CircularProgressIndicator(),
+                      imageUrl: champion.imageUrl,
+                    ),
+                    borderRadius: BorderRadius.circular(30),
+                  ),
+                  title: Text(champion.nom),
+                  subtitle: Text(champion.titre),
+                  trailing: IconButton(
+                    icon: Icon(
+                      Icons.favorite,
+                      color: champion.loved ? Colors.red : Colors.grey,
+                    ),
+                    onPressed: () {
+                      if (champion.loved) {
+                        unFav(champion);
+                      } else {
+                        fav(champion);
+                      }
+                    },
+                  ),
                 ),
-                onPressed: () {
-                  if (champion.loved) {
-                    unFav(champion);
-                  } else {
-                    fav(champion);
-                  }
-                },
               ),
-            ),
-          ),
+            );
+          },
+          itemCount: champions.length,
         );
       },
-      itemCount: champions.length,
     );
   }
 
