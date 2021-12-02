@@ -47,7 +47,8 @@ class ViewModel with ChangeNotifier {
 
   Future<List<Champion>> _merge() async {
     List<Champion> list = [];
-    final results = await Service().fetchChampions();
+    final results = await Service.fetchChampions();
+    print(results.length);
     final loved = await Service().fetchLovedFromLocal();
     print("merge loved" + loved.toString());
     results.removeWhere((element) {
@@ -115,6 +116,10 @@ class ViewModel with ChangeNotifier {
     List<Spell> spells = await Service().fetchSpellForAChampion(champion.id);
     _selected = DetailViewModel(champion: champion, spells: spells);
     notifyListeners();
+  }
+
+  void resetSelect() {
+    _selected = null;
   }
 
   DetailViewModel? get selected {

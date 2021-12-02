@@ -8,8 +8,11 @@ import 'package:projet_android_kozlov/service/local/database.dart';
 import 'api/api.dart';
 
 class Service {
+  static List<Champion> champions = [];
+
   /// Recupere un model depuis l'api
   Future<Champion> fetchChampion(String champion) async {
+    print('fetchChampion $champion');
     final response = await http.get(Uri.parse(Api.championData(champion)));
     if (response.statusCode == 200) {
       final body = jsonDecode(utf8.decode(response.bodyBytes));
@@ -21,20 +24,26 @@ class Service {
   }
 
   /// Recupere la liste du model depuis l'api
-  Future<List<Champion>> fetchChampions() async {
-    final response = await http.get(Uri.parse(Api.allChampions()));
-    if (response.statusCode == 200) {
-      final body = jsonDecode(utf8.decode(response.bodyBytes));
-      final json = body['data'] as Map<String, dynamic>;
-      List<Champion> champions = [];
-      json.forEach((key, value) => champions.add(Champion.fromJson(value)));
-      return champions;
-    } else {
-      throw Exception('Erreur lors du chargement des champions.');
+  static Future<List<Champion>> fetchChampions() async {
+    print('fetchChampions');
+    if (champions.isEmpty) {
+      print('calling api');
+      final response = await http.get(Uri.parse(Api.allChampions()));
+      if (response.statusCode == 200) {
+        final body = jsonDecode(utf8.decode(response.bodyBytes));
+        final json = body['data'] as Map<String, dynamic>;
+        json.forEach((key, value) => champions.add(Champion.fromJson(value)));
+        return champions;
+      } else {
+        throw Exception('Erreur lors du chargement des champions.');
+      }
     }
+    print('return cache');
+    return List.from(champions);
   }
 
   Future<List<Champion>> fetchLovedFromLocal() async {
+    print('fetchLoved');
     final db = await DataBaseLovedChamp.instance.database;
     List<Map<String, dynamic>> champions = await db.query("Champions");
     return List.generate(
@@ -42,6 +51,7 @@ class Service {
   }
 
   Future<List<Spell>> fetchSpellForAChampion(String championId) async {
+    print('fetchSpell $championId');
     final response = await http.get(Uri.parse(Api.championData(championId)));
     if (response.statusCode == 200) {
       final body = jsonDecode(utf8.decode(response.bodyBytes));

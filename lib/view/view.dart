@@ -222,9 +222,10 @@ class _ChampionListState extends State<ChampionList>
   }
 
   details(ChampionViewModel champion) {
-    Provider.of<ViewModel>(context, listen: false).select(champion);
-    Navigator.push(
-        context, MaterialPageRoute(builder: (_) => ChampionDetail()));
+    final provider = Provider.of<ViewModel>(context, listen: false);
+    provider.select(champion);
+    Navigator.push(context, MaterialPageRoute(builder: (_) => ChampionDetail()))
+        .then((value) => provider.resetSelect());
   }
 
   fav(ChampionViewModel champion) {

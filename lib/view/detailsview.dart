@@ -140,8 +140,9 @@ class _ChampionDetailState extends State<ChampionDetail> {
                 selectedSpell!.name,
                 style: TextStyle(fontWeight: FontWeight.bold),
               ),
+              SizedBox(height: 5),
               Text(
-                selectedSpell!.description,
+                selectedSpell!.description.replaceAll("<br>", "\n"),
                 textAlign: TextAlign.justify,
               )
             ],
