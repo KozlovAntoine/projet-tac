@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:projet_android_kozlov/model/model.dart';
+import 'package:projet_android_kozlov/model/spell.dart';
 import 'package:projet_android_kozlov/service/local/database.dart';
 import 'package:projet_android_kozlov/service/service.dart';
+import 'package:projet_android_kozlov/viewmodel/detailedviewmodel.dart';
 import 'package:projet_android_kozlov/viewmodel/viewmodel.dart';
 
 class ViewModel with ChangeNotifier {
   List<ChampionViewModel> champions = [];
-  ChampionViewModel? _selected;
+  DetailViewModel? _selected;
   bool inLovedTab = false;
   bool inSearchMode = false;
   String searchTxt = "";
@@ -17,12 +19,15 @@ class ViewModel with ChangeNotifier {
 
   Future<void> fetch() async {
     if (inSearchMode) {
+      print('searchmode');
       await search(searchTxt);
     } else if (inLovedTab) {
+      print('loved champ');
       fetchLovedChampions();
       //print('fetch loved tab');
       //print(champions.toString());
     } else {
+      print('all champions');
       fetchChampions();
       //print('fetch all');
       //print(champions.toString());
@@ -86,28 +91,34 @@ class ViewModel with ChangeNotifier {
     champions = results
         .map((champion) => ChampionViewModel(champion: champion))
         .toList();
+    champions.sort((e1, e2) {
+      return e1.nom.compareTo(e2.nom);
+    });
     notifyListeners();
   }
 
   void addFavorite(ChampionViewModel champion) async {
+    print('addFavorite');
     DataBaseLovedChamp.instance.insert(champion);
     await fetch();
     notifyListeners();
   }
 
   void removeFavorite(ChampionViewModel champion) async {
+    print('removeFavorite');
     DataBaseLovedChamp.instance.remove(champion);
     await fetch();
     notifyListeners();
   }
 
-  void select(ChampionViewModel champion) {
-    _selected = champion;
+  void select(ChampionViewModel champion) async {
+    List<Spell> spells = await Service().fetchSpellForAChampion(champion.id);
+    _selected = DetailViewModel(champion: champion, spells: spells);
     notifyListeners();
   }
 
-  ChampionViewModel get selected {
-    return _selected!;
+  DetailViewModel? get selected {
+    return _selected;
   }
 
   void setSearchMode(bool searchMode) {

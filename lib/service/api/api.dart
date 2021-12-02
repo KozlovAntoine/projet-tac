@@ -1,23 +1,48 @@
+import 'dart:convert';
+
+import 'package:http/http.dart' as http;
+
 class Api {
+  static String version = "11.20.1";
+
   /// URL de tous les champions
-  static const allChampions =
-      "http://ddragon.leagueoflegends.com/cdn/11.20.1/data/fr_FR/champion.json";
+  static String allChampions() {
+    print(version);
+    return "http://ddragon.leagueoflegends.com/cdn/$version/data/fr_FR/champion.json";
+  }
 
   /// URL pour un champion
-  static const _championUrl =
-      "http://ddragon.leagueoflegends.com/cdn/11.20.1/data/fr_FR/champion/";
+  static String championUrl() {
+    print(version);
+    return "http://ddragon.leagueoflegends.com/cdn/$version/data/fr_FR/champion/";
+  }
 
   /// URL de l'image splach art
   static String championImageUrl(String img) {
-    return 'http://ddragon.leagueoflegends.com/cdn/11.20.1/img/champion/$img';
+    print(version);
+    return 'http://ddragon.leagueoflegends.com/cdn/$version/img/champion/$img';
   }
 
   static String spellImageUrl(String spell) {
-    return 'http://ddragon.leagueoflegends.com/cdn/11.23.1/img/spell/$spell.png';
+    print(version);
+    return 'http://ddragon.leagueoflegends.com/cdn/$version/img/spell/$spell.png';
   }
 
   /// Construit l'URL pour un champion
   static String championData(String champion) {
-    return '$_championUrl$champion.json';
+    print(version);
+    return '${championUrl()}$champion.json';
+  }
+
+  static Future<void> setVersion() async {
+    final response = await http.get(
+        Uri.parse("https://ddragon.leagueoflegends.com/api/versions.json"));
+    if (response.statusCode == 200) {
+      final body = jsonDecode(utf8.decode(response.bodyBytes));
+      final json = body as List<dynamic>;
+      Api.version = json[0];
+    } else {
+      throw Exception('Erreur lors du chargement de la version');
+    }
   }
 }

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:projet_android_kozlov/service/api/api.dart';
 import 'package:projet_android_kozlov/service/local/database.dart';
 import 'package:projet_android_kozlov/view/view.dart';
 import 'package:projet_android_kozlov/viewmodel/listviewmodel.dart';
 import 'package:provider/provider.dart';
 
 void main() {
+  Api.setVersion();
   WidgetsFlutterBinding.ensureInitialized();
   DataBaseLovedChamp dataBaseLovedChamp = DataBaseLovedChamp();
   runApp(const MyApp());

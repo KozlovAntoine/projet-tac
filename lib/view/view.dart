@@ -59,6 +59,7 @@ class _ChampionListState extends State<ChampionList>
 
   @override
   Widget build(BuildContext context) {
+    final provider = Provider.of<ViewModel>(context);
     return DefaultTabController(
       length: 2,
       initialIndex: 0,
@@ -83,6 +84,7 @@ class _ChampionListState extends State<ChampionList>
             IconButton(
               icon: Icon(searchMode ? Icons.clear : Icons.search),
               onPressed: () {
+                provider.setSearchMode(!searchMode);
                 setState(() {
                   searchMode = !searchMode;
                   if (!searchMode) {

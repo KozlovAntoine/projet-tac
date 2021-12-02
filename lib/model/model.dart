@@ -1,3 +1,4 @@
+import 'package:projet_android_kozlov/model/spell.dart';
 import 'package:projet_android_kozlov/service/api/api.dart';
 
 /// Le modele
@@ -7,6 +8,7 @@ class Champion {
   String titre;
   String blurb;
   String imageUrl;
+  //List<Spell> spells;
   bool loved;
 
   Champion(
