@@ -184,37 +184,40 @@ class _ChampionListState extends State<ChampionList>
       crossAxisCount:
           MediaQuery.of(context).orientation == Orientation.portrait ? 2 : 3,
       children: List.generate(champions.length, (index) {
-        return Card(
-          semanticContainer: true,
-          clipBehavior: Clip.antiAliasWithSaveLayer,
-          child: Stack(
-            children: [
-              Positioned.fill(
-                child: CachedNetworkImage(
-                  placeholder: (context, url) =>
-                      const CircularProgressIndicator(),
-                  imageUrl: champions[index].imageUrl,
-                  fit: BoxFit.fill,
-                ),
-              ),
-              Positioned.fill(
-                child: Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Container(
-                    height: 20,
-                    color: Colors.black45,
+        return InkWell(
+          onTap: () => details(champions[index]),
+          child: Card(
+            semanticContainer: true,
+            clipBehavior: Clip.antiAliasWithSaveLayer,
+            child: Stack(
+              children: [
+                Positioned.fill(
+                  child: CachedNetworkImage(
+                    placeholder: (context, url) =>
+                        const CircularProgressIndicator(),
+                    imageUrl: champions[index].imageUrl,
+                    fit: BoxFit.fill,
                   ),
                 ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Text(champions[index].nom,
-                    style: TextStyle(color: Colors.white)),
-              ),
-            ],
-          ),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10.0),
+                Positioned.fill(
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Container(
+                      height: 20,
+                      color: Colors.black45,
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: Alignment.bottomCenter,
+                  child: Text(champions[index].nom,
+                      style: TextStyle(color: Colors.white)),
+                ),
+              ],
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(10.0),
+            ),
           ),
         );
       }),
