@@ -28,7 +28,7 @@ class Service {
     print('fetchChampions');
     if (champions.isEmpty) {
       print('calling api');
-      final response = await http.get(Uri.parse(Api.allChampions()));
+      final response = await http.get(Uri.parse(await Api.allChampions()));
       if (response.statusCode == 200) {
         final body = jsonDecode(utf8.decode(response.bodyBytes));
         final json = body['data'] as Map<String, dynamic>;

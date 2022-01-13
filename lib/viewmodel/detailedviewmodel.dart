@@ -1,4 +1,3 @@
-import 'package:projet_android_kozlov/model/model.dart';
 import 'package:projet_android_kozlov/model/spell.dart';
 import 'package:projet_android_kozlov/viewmodel/viewmodel.dart';
 
