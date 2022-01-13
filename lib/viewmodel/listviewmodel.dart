@@ -76,14 +76,19 @@ class ViewModel with ChangeNotifier {
     } else {
       results = await _merge();
     }
+    results.sort((e1, e2) {
+      return e1.nom.compareTo(e2.nom);
+    });
 
     /// on ignore les majuscules
     final research = results.where((element) =>
         element.nom.toLowerCase().contains(search.toLowerCase()) ||
         element.id.toLowerCase().contains(search.toLowerCase()));
+
     champions = research
         .map((champion) => ChampionViewModel(champion: champion))
         .toList();
+
     notifyListeners();
   }
 
